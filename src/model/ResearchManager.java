@@ -13,9 +13,9 @@ public class ResearchManager {
     }
 
     public void printAllPapers(Comparator<ResearchPaper> comparator) {
-        System.out.println("══════════════════════════════════════════════");
+
         System.out.println("       ALL UNIVERSITY RESEARCH PAPERS");
-        System.out.println("══════════════════════════════════════════════");
+
         allResearchers.stream()
                 .flatMap(r -> r.getPapers().stream())
                 .sorted(comparator)
@@ -29,9 +29,9 @@ public class ResearchManager {
     }
 
     public void printResearcherRanking() {
-        System.out.println("══════════════════════════════════════════════");
+
         System.out.println("        RESEARCHER CITATION RANKING");
-        System.out.println("══════════════════════════════════════════════");
+
         allResearchers.stream()
                 .sorted(Comparator.comparingInt(Researcher::getTotalCitations).reversed())
                 .forEach(r -> System.out.printf(

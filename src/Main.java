@@ -12,13 +12,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // 1. Create Researchers
         Professor drSmith  = new Professor("Dr. Smith", 7);
         Professor drLow    = new Professor("Dr. Low",   1);
         GradStudent alice  = new GradStudent("Alice",   4);
         GradStudent bob    = new GradStudent("Bob",     2);
 
-        // 2. Create Papers
         ResearchPaper p1 = new ResearchPaper(
                 "Deep Learning for NLP",
                 Arrays.asList("Dr. Smith", "Alice"),
@@ -55,7 +53,6 @@ public class Main {
         bob.addPaper(p3);
         bob.addPaper(p4);
 
-        // 3. Print papers sorted different ways
         System.out.println("\n--- Dr. Smith's papers sorted by DATE ---");
         drSmith.printPapers(PaperComparators.BY_DATE);
 
@@ -65,7 +62,6 @@ public class Main {
         System.out.println("--- Bob's papers sorted by PAGES ---");
         bob.printPapers(PaperComparators.BY_PAGES);
 
-        // 4. ResearchProject
         ResearchProject project = new ResearchProject("AI in Healthcare");
         project.addPaper(p1);
         project.addPaper(p3);
@@ -82,7 +78,6 @@ public class Main {
         project.printParticipants();
         project.printPapers(PaperComparators.BY_CITATIONS_DESC);
 
-        // 5. h-index validation
         System.out.println("--- Supervisor Validation ---");
         try {
             drSmith.validateAsSupervisor();
@@ -92,7 +87,6 @@ public class Main {
             System.out.println("❌ " + e.getMessage());
         }
 
-        // 6. ResearchManager
         List<Researcher> allResearchers = new ArrayList<>(
                 Arrays.asList(drSmith, alice, bob)
         );
