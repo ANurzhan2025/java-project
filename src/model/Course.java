@@ -8,7 +8,7 @@ public class Course implements Serializable {
     private String courseCode;
     private String name;
     private int credits;
-    private List<Teacher> instructors; 
+    private List<Professor> instructors; 
 
     public Course(String courseCode, String name, int credits) {
         this.courseCode = courseCode;
@@ -19,10 +19,15 @@ public class Course implements Serializable {
 
     public String getCourseCode() { return courseCode; }
     public String getName() { return name; }
+    public String getCourseName() { return name; }
     public int getCredits() { return credits; }
     
-    public void addInstructor(Teacher teacher) {
-        this.instructors.add(teacher);
+    public void addInstructor(Professor professor) {
+        this.instructors.add(professor);
+    }
+
+    public List<Professor> getInstructors() {
+        return instructors;
     }
 
     @Override

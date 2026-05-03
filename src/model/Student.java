@@ -12,8 +12,16 @@ public class Student extends User implements Serializable {
     private Map<Course, Mark> marks;
     private Researcher researchSupervisor; 
 
+    public Student(String id, String name, String password) {
+        super(id, name, password);
+        this.yearOfStudy = 1;
+        this.totalCredits = 0;
+        this.registeredCourses = new ArrayList<>();
+        this.marks = new HashMap<>();
+    }
+
     public Student(String id, String username, String password, String name, int yearOfStudy) {
-        super(id, username, password, name); 
+        super(id, name, password); 
         this.yearOfStudy = yearOfStudy;
         this.totalCredits = 0;
         this.registeredCourses = new ArrayList<>();
@@ -31,7 +39,6 @@ public class Student extends User implements Serializable {
         }
     }
 
-    
     public void setSupervisor(Researcher supervisor) throws LowHIndexException {
         if (this.yearOfStudy == 4) {
             supervisor.validateAsSupervisor(); 
@@ -39,6 +46,10 @@ public class Student extends User implements Serializable {
         } else {
             System.out.println("Only 4th year students have a research supervisor.");
         }
+    }
+
+    public List<Course> getCourses() {
+        return registeredCourses;
     }
 
     public void viewCourses() {
