@@ -20,7 +20,6 @@ public class Student extends User implements Serializable {
         this.marks = new HashMap<>();
     }
 
-    // Регистрация на курс с проверкой лимита[cite: 1]
     public void registerForCourse(Course course) throws CreditLimitExceededException {
         if (this.totalCredits + course.getCredits() > 21) {
             throw new CreditLimitExceededException("Cannot register: total credits would exceed 21!");[cite: 1]
