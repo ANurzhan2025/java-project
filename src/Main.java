@@ -8,17 +8,47 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        // --- Инициализация преподавателей и студентов-исследователей ---
+        List<User> allUsers = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        Admin myAdmin = new Admin("A1", "admin01", "admin123", "Mukhamejan"); 
+        Manager myManager = new Manager("M1", "manager01", "man123", "Asset", ManagerType.OR);
+        
+        allUsers.add(myAdmin);
+        allUsers.add(myManager);
+
+        System.out.println("========= UNIVERSITY SYSTEM LOGIN =========");
+        System.out.print("Username: ");
+        String login = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        User currentUser = null;
+        for (User u : allUsers) {
+            if (u.getUsername().equals(login) && u.getPassword().equals(password)) {
+                currentUser = u;
+                break;
+            }
+        }
+
+        if (currentUser == null) {
+            System.out.println("❌ Access Denied: Invalid credentials.");
+            return; 
+        }
+
+        System.out.println("✅ Welcome, " + currentUser.getName() + "!");
+        System.out.println("-------------------------------------------\n");
+
         Professor drSmith  = new Professor("Dr. Smith", 7);
         Professor drLow    = new Professor("Dr. Low",   1);
         GradStudent alice  = new GradStudent("Alice",   4);
         GradStudent bob    = new GradStudent("Bob",     2);
 
-        // --- Работа с научными статьями (Research Papers) ---
         ResearchPaper p1 = new ResearchPaper(
                 "Deep Learning for NLP",
                 Arrays.asList("Dr. Smith", "Alice"),
@@ -38,15 +68,13 @@ public class Main {
         drSmith.addPaper(p2);
         alice.addPaper(p1);
 
-        System.out.println("\n========= SYSTEM TEST: STUDENTS & COURSES =========");
+        System.out.println("========= SYSTEM TEST: STUDENTS & COURSES =========");
         
-        // Создание курсов
         Course oop = new Course("CS201", "OOP", 5);
         Course db = new Course("CS202", "Databases", 6);
         Course math = new Course("MT101", "Calculus", 8);
         Course physics = new Course("PH101", "Physics", 5);
 
-        // Создание основного студента (тебя)
         Student me = new Student("S123", "doskabol", "pass123", "Doszhan", 4);
 
         System.out.println("--- Testing Course Registration (Limit 21) ---");
@@ -54,19 +82,21 @@ public class Main {
             me.registerForCourse(oop);
             me.registerForCourse(db);
             me.registerForCourse(math);
-            System.out.println("✅ Registered: 19 credits.");
+            System.out.println("✅ Registered for courses: 19 credits.");
+            
+            myManager.approveRegistration(me, oop);
             
             System.out.println("Attempting to add Physics (5 credits)...");
             me.registerForCourse(physics);
             
         } catch (CreditLimitExceededException e) {
-            System.out.println("❌ " + e.getMessage()); // Должно сработать исключение (19 + 5 = 24 > 21)[cite: 1]
+            System.out.println("❌ " + e.getMessage());
         }
 
         System.out.println("\n--- Testing Supervisor Assignment (4th Year Rule) ---");
         try {
             me.setSupervisor(drSmith);
-            System.out.println("✅ " + drSmith.getName() + " assigned.");
+            System.out.println("✅ " + drSmith.getName() + " assigned as supervisor.");
         } catch (LowHIndexException e) {
             System.out.println("❌ " + e.getMessage());
         }
@@ -78,46 +108,23 @@ public class Main {
         try {
             project.addParticipant(drSmith);
             project.addParticipant(alice);
+            
+            myAdmin.addUser(me, allUsers);
+            
+            project.addParticipant("Simple User"); 
         } catch (NonResearcherException e) {
             System.out.println("❌ " + e.getMessage());
         }
 
         System.out.println("\n--- Final Student Status ---");
         me.viewCourses();
+        me.viewMarks();
+
+        myManager.generatePerformanceReport(Arrays.asList(me));
 
         System.out.println("\n--- Researcher Ranking (Manager View) ---");
         List<Researcher> allResearchers = new ArrayList<>(Arrays.asList(drSmith, alice, bob));
-        ResearchManager resManager = new ResearchManager(allResearchers);
-        resManager.printResearcherRanking();
-
-        // --- Блок Администрирования и Менеджмента ---[cite: 2]
-        System.out.println("\n========= SYSTEM TEST: ADMIN & MANAGEMENT =========");
-
-        // Список всех пользователей для админа
-        List<User> allUsers = new ArrayList<>();
-        allUsers.add(me);
-        allUsers.add(drSmith);
-
-        // Тест Admin
-        Admin admin = new Admin("AD001", "Admin_Root", "admin_pass");
-        Student newStudent = new Student("S999", "admin01", "admin123", "Mukhamejan", 2);
-        
-        admin.addUser(allUsers, newStudent);
-        System.out.println("Users in system after admin action: " + allUsers.size());
-
-        // Тест Manager
-        Manager officeManager = new Manager("M55", "Dana", "manager123", ManagerType.OR);
-        
-        System.out.println("\nManager " + officeManager.getName() + " checking student:");
-        officeManager.viewStudentInfo(me);
-        
-        // Назначение курса преподавателю
-        officeManager.assignCourse(drSmith, oop);
-        
-        // Генерация отчета по успеваемости
-        List<Student> studentsForReport = Arrays.asList(me, newStudent);
-        officeManager.generatePerformanceReport(studentsForReport);
-
-        System.out.println("\n========= ALL TESTS COMPLETED =========");
+        ResearchManager researchManager = new ResearchManager(allResearchers);
+        researchManager.printResearcherRanking();
     }
 }
