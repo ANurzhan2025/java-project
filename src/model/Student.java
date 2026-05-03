@@ -26,7 +26,7 @@ public class Student extends User implements Serializable {
         }
         if (!registeredCourses.contains(course)) {
             registeredCourses.add(course);
-            marks.put(course, new Mark()); // Инициализируем пустую оценку[cite: 1]
+            marks.put(course, new Mark()); 
             this.totalCredits += course.getCredits();
         }
     }
