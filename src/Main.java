@@ -1,4 +1,5 @@
 import comparators.PaperComparators;
+import exceptions.CreditLimitExceededException;
 import exceptions.LowHIndexException;
 import exceptions.NonResearcherException;
 import model.*;
@@ -11,7 +12,6 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-
         Professor drSmith  = new Professor("Dr. Smith", 7);
         Professor drLow    = new Professor("Dr. Low",   1);
         GradStudent alice  = new GradStudent("Alice",   4);
@@ -31,70 +31,62 @@ public class Main {
                 LocalDate.of(2022, 7, 1),
                 85, 8, "10.1038/NMI.2022.042", "Abstract B", "FL, Privacy"
         );
-        ResearchPaper p3 = new ResearchPaper(
-                "Graph Neural Networks Survey",
-                Arrays.asList("Alice", "Bob"),
-                "ACM Computing Surveys",
-                LocalDate.of(2021, 11, 20),
-                540, 24, "10.1145/ACM.2021.099", "Abstract C", "GNN, Graph"
-        );
-        ResearchPaper p4 = new ResearchPaper(
-                "Quantum Computing Basics",
-                Arrays.asList("Bob"),
-                "Physical Review Letters",
-                LocalDate.of(2020, 5, 10),
-                60, 6, "10.1103/PRL.2020.011", "Abstract D", "Quantum"
-        );
 
         drSmith.addPaper(p1);
         drSmith.addPaper(p2);
         alice.addPaper(p1);
-        alice.addPaper(p3);
-        bob.addPaper(p3);
-        bob.addPaper(p4);
 
-        System.out.println("\n--- Dr. Smith's papers sorted by DATE ---");
-        drSmith.printPapers(PaperComparators.BY_DATE);
+        System.out.println("\n========= SYSTEM TEST: STUDENTS & COURSES =========");
+        
+        Course oop = new Course("CS201", "OOP", 5);
+        Course db = new Course("CS202", "Databases", 6);
+        Course math = new Course("MT101", "Calculus", 8);
+        Course physics = new Course("PH101", "Physics", 5);
 
-        System.out.println("--- Alice's papers sorted by CITATIONS ---");
-        alice.printPapers(PaperComparators.BY_CITATIONS_DESC);
+        Student me = new Student("S123", "doskabol", "pass123", "Doszhan", 4);
 
-        System.out.println("--- Bob's papers sorted by PAGES ---");
-        bob.printPapers(PaperComparators.BY_PAGES);
-
-        ResearchProject project = new ResearchProject("AI in Healthcare");
-        project.addPaper(p1);
-        project.addPaper(p3);
-        project.addPaper(p2);
-
+        System.out.println("--- Testing Course Registration (Limit 21) ---");
         try {
-            project.addParticipant(drSmith);
-            project.addParticipant(alice);
-            project.addParticipant("John (Bachelor Student)"); // will throw
-        } catch (NonResearcherException e) {
-            System.out.println("\n❌ " + e.getMessage());
+            me.registerForCourse(oop);
+            me.registerForCourse(db);
+            me.registerForCourse(math);
+            System.out.println("✅ Registered: 19 credits.");
+            
+            System.out.println("Attempting to add Physics (5 credits)...");
+            me.registerForCourse(physics);
+            
+        } catch (CreditLimitExceededException e) {
+            System.out.println("❌ " + e.getMessage());
         }
 
-        project.printParticipants();
-        project.printPapers(PaperComparators.BY_CITATIONS_DESC);
-
-        System.out.println("--- Supervisor Validation ---");
+        System.out.println("\n--- Testing Supervisor Assignment (4th Year Rule) ---");
         try {
-            drSmith.validateAsSupervisor();
-            System.out.println("✅ " + drSmith.getName() + " approved as supervisor.");
-            drLow.validateAsSupervisor(); // will throw
+            me.setSupervisor(drSmith);
+            System.out.println("✅ " + drSmith.getName() + " assigned.");
         } catch (LowHIndexException e) {
             System.out.println("❌ " + e.getMessage());
         }
 
-        List<Researcher> allResearchers = new ArrayList<>(
-                Arrays.asList(drSmith, alice, bob)
-        );
+        System.out.println("\n========= SYSTEM TEST: RESEARCH PROJECTS =========");
+        ResearchProject project = new ResearchProject("AI in Healthcare");
+        project.addPaper(p1);
+
+        try {
+            project.addParticipant(drSmith);
+            project.addParticipant(alice);
+            project.addParticipant("Simple User"); 
+        } catch (NonResearcherException e) {
+            System.out.println("❌ " + e.getMessage());
+        }
+
+        System.out.println("\n--- Final Student Status ---");
+        me.viewCourses();
+        me.viewMarks();
+
+        System.out.println("\n--- Researcher Ranking (Manager View) ---");
+        List<Researcher> allResearchers = new ArrayList<>(Arrays.asList(drSmith, alice, bob));
         ResearchManager manager = new ResearchManager(allResearchers);
-
-        System.out.println("\n--- ALL university papers sorted by DATE ---");
-        manager.printAllPapers(PaperComparators.BY_DATE);
-
         manager.printResearcherRanking();
     }
 }
+```[cite: 1, 2]
